@@ -4,5 +4,14 @@
 /.idea/workspace.xml
 /.idea/libraries
 .DS_Store
+.idea
 /build
 /captures
+libs/
+src/main/java/cn/jzy/smartcity/adapter/
+src/main/java/cn/jzy/smartcity/base/
+src/main/java/cn/jzy/smartcity/bean/
+src/main/java/cn/jzy/smartcity/fragment/
+src/main/java/cn/jzy/smartcity/utils/
+src/main/java/cn/jzy/smartcity/view/
+src/main/res/drawable/
