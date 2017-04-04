@@ -92,6 +92,38 @@ public class NewsCenterFragment extends BaseFragment implements BaseLoadNetDataO
         //让TabPagerIndicator和ViewPager进行联合
         tabPageIndicator.setViewPager(vpNewsCenterContent);
 
+
+        //让新闻中心第一个子tab的轮播图开始切换
+        mViews.get(0).startSwitch();
+
+        //给ViewPager设置页面切换监听
+        //注意：ViewPager和TabPagerIndicator配合使用，监听只能设置给TabPagerIndicator
+        tabPageIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                //当前的开始切换，其他的tab停止切换
+                for (int i = 0; i < mViews.size(); i++) {
+                    if (i==position){
+                        //选中页
+                        mViews.get(i).startSwitch();
+                    }else{
+                        //未选中页
+                        mViews.get(i).stopSwitch();
+                    }
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
     }
 
 

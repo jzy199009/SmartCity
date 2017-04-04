@@ -8,6 +8,7 @@ import java.util.List;
 
 import cn.jzy.smartcity.base.NewsCenterContentTabPager;
 import cn.jzy.smartcity.bean.NewsCenterBean;
+import cn.jzy.smartcity.utils.Constant;
 
 /**
  * Created by Administrator on 2017/4/1.
@@ -35,6 +36,13 @@ public class NewsCenterTabVPAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         View view = views.get(position).mView;
         container.addView(view);
+        
+        //当新闻中心页的Viewpager切换页面时，在NewsCenterTabVPAdapter的instantiateItem方法中，进行加载网络数据
+        NewsCenterContentTabPager tabPager = views.get(position);
+        // /10007/list_1.json 需要在前面进行路径的拼接
+        String url = Constant.HOST + children.get(position).url;
+        tabPager.loadNetData(url);
+
         return view;
     }
 
