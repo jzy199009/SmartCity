@@ -15,28 +15,30 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.jzy.smartcity.R;
 import cn.jzy.smartcity.activity.MainActivity;
+import cn.jzy.smartcity.base.BaseFragment;
 import cn.jzy.smartcity.bean.NewsCenterBean;
+import cn.jzy.smartcity.fragment.NewsCenterFragment;
 
 /**
  * Created by Administrator on 2017/3/31.
  */
 public class MenuAdapter extends RecyclerView.Adapter {
     private Context context;
-    private List<NewsCenterBean.NewsCenterMenuBean> mNewsCenterMenuBeenList;
+    private List<NewsCenterBean.NewsCenterMenuBean> data;
 
-    //默认选中的条目下标
+    //默认选中的条目下标(0)
     private int selectedPosition;
 
-    public void setNewsCenterMenuBeenList(List<NewsCenterBean.NewsCenterMenuBean> newsCenterMenuBeenList) {
-        mNewsCenterMenuBeenList = newsCenterMenuBeenList;
+    public void setData(List<NewsCenterBean.NewsCenterMenuBean> data) {
+        this.data = data;
 
         //刷新显示
         notifyDataSetChanged();
     }
 
-    public MenuAdapter(Context context, List<NewsCenterBean.NewsCenterMenuBean> newsCenterMenuBeenList) {
+    public MenuAdapter(Context context, List<NewsCenterBean.NewsCenterMenuBean> data) {
         this.context = context;
-        mNewsCenterMenuBeenList = newsCenterMenuBeenList;
+        this.data = data;
     }
 
     @Override
@@ -47,11 +49,11 @@ public class MenuAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        final NewsCenterBean.NewsCenterMenuBean newsCenterMenuBean = mNewsCenterMenuBeenList.get(position);
+        final NewsCenterBean.NewsCenterMenuBean newsCenterMenuBean = data.get(position);
         MyViewHolder viewHolder = (MyViewHolder) holder;
 
         viewHolder.mTvMenuTitle.setText(newsCenterMenuBean.title);
-        System.out.println("selectedPosition = " + selectedPosition);
+        //System.out.println("selectedPosition = " + selectedPosition);
         //选中
         if (selectedPosition == position) {
             viewHolder.mTvMenuTitle.setTextColor(Color.RED);
@@ -76,7 +78,14 @@ public class MenuAdapter extends RecyclerView.Adapter {
                     notifyDataSetChanged();
 
                     //修改对应tab页面的标题
-                    ((MainActivity)context).getCurrentTabFragment().setTitle(newsCenterMenuBean.title);
+                    BaseFragment baseFragment = ((MainActivity) context).getCurrentTabFragment();
+                    baseFragment.setTitle(newsCenterMenuBean.title);
+
+                    if (baseFragment instanceof NewsCenterFragment) {
+                        NewsCenterFragment newsCenterFragment = (NewsCenterFragment) baseFragment;
+                        //切换内容
+                        newsCenterFragment.switchContent(position);
+                    }
                 }
 
                 //关闭侧滑菜单
@@ -87,7 +96,7 @@ public class MenuAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return mNewsCenterMenuBeenList != null ? mNewsCenterMenuBeenList.size() : 0;
+        return data != null ? data.size() : 0;
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder{

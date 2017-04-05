@@ -1,6 +1,7 @@
 package cn.jzy.smartcity.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.jzy.smartcity.R;
+import cn.jzy.smartcity.activity.NewsDetailActivity;
 import cn.jzy.smartcity.bean.NewsCenterTabBean;
 
 /**
@@ -38,12 +40,22 @@ public class NewsListAdapter extends RecyclerView.Adapter {
     //绑定数据
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        NewsCenterTabBean.NewsBean newsBean = news.get(position);
+        final NewsCenterTabBean.NewsBean newsBean = news.get(position);
         ViewHolder viewHolder = (ViewHolder) holder;
 
         Picasso.with(mContext).load(newsBean.listimage).into(viewHolder.mIvIcon);
         viewHolder.mTvTitle.setText(newsBean.title);
         viewHolder.mTvTime.setText(newsBean.pubdate);
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //跳转到新闻详情界面
+                Intent intent = new Intent(mContext,NewsDetailActivity.class);
+                intent.putExtra("url",newsBean.url);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override

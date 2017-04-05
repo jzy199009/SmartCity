@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -25,6 +26,7 @@ import cn.jzy.smartcity.R;
 import cn.jzy.smartcity.adapter.NewsListAdapter;
 import cn.jzy.smartcity.adapter.SwitchImageVPAdapter;
 import cn.jzy.smartcity.bean.NewsCenterTabBean;
+import cn.jzy.smartcity.utils.CacheUtils;
 import cn.jzy.smartcity.utils.Constant;
 import cn.jzy.smartcity.utils.MyLogger;
 import cn.jzy.smartcity.utils.MyToast;
@@ -37,7 +39,7 @@ import okhttp3.Call;
  * Created by Administrator on 2017/4/1.
  * 新闻中心的内容tab页面
  */
-public class NewsCenterContentTabPager implements ViewPager.OnPageChangeListener, RefreshRecyclerView.OnRefreshListener {
+public class NewsCenterContentTabPager implements ViewPager.OnPageChangeListener, RefreshRecyclerView.OnRefreshListener, RefreshRecyclerView.OnLoadMoreListener {
     private static final String TAG = "NewsCenterContentTabPager";
     //    @BindView(R.id.vp_switch_image)
     SwitchImageViewViewPager mVpSwitchImage;
@@ -75,7 +77,7 @@ public class NewsCenterContentTabPager implements ViewPager.OnPageChangeListener
         return view;
     }
 
-    public void loadNetData(String url) {
+    public void loadNetData(final String url) {
         OkHttpUtils
                 .get()
                 .url(url)
@@ -84,6 +86,17 @@ public class NewsCenterContentTabPager implements ViewPager.OnPageChangeListener
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         MyToast.show(mContext, "加载数据失败");
+
+                        //读取缓存
+                        try {
+                            String json = CacheUtils.readCache(mContext, url);
+                            if(!TextUtils.isEmpty(json)){
+                                processData(json);
+                            }
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+
                     }
 
                     @Override
@@ -91,6 +104,14 @@ public class NewsCenterContentTabPager implements ViewPager.OnPageChangeListener
                         MyLogger.i(TAG, response);
                         //解析数据
                         processData(response);
+
+                        //缓存数据
+                        try {
+                            CacheUtils.saveCache(mContext,url,response);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 });
     }
@@ -141,6 +162,9 @@ public class NewsCenterContentTabPager implements ViewPager.OnPageChangeListener
 
         //设置下拉刷新的监听
         mRvNews.setOnRefreshListener(this);
+
+        //设置上拉加载的监听
+        mRvNews.setOnLoadMoreListener(this);
     }
 
     //初始化轮播图的数据
@@ -269,6 +293,7 @@ public class NewsCenterContentTabPager implements ViewPager.OnPageChangeListener
             if (mVpSwitchImage != null) {
                 //切换逻辑
                 int currentItem = mVpSwitchImage.getCurrentItem();
+                //判断是否最后一页
                 if (currentItem == mNewsCenterTabBean.data.topnews.size() - 1) {
                     currentItem = 0;
                 } else {
@@ -283,27 +308,114 @@ public class NewsCenterContentTabPager implements ViewPager.OnPageChangeListener
 
     @Override
     public void onRefresh() {
+        final String url = Constant.HOST + mNewsCenterTabBean.data.more;
         OkHttpUtils
                 .get()
-                .url(Constant.HOST + mNewsCenterTabBean.data.more)
+                .url(url)
                 .build()
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         MyToast.show(mContext, "联网获取数据失败");
+
+                        //读取缓存
+                        try {
+                            String json = CacheUtils.readCache(mContext, url);
+                            if(!TextUtils.isEmpty(json)){
+                                processMoreData(json);
+                            }
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+
                         //隐藏头
                         mRvNews.hideHeaderView(false);
                     }
 
                     @Override
                     public void onResponse(String response, int id) {
-                        Gson gson = new Gson();
-                        NewsCenterTabBean tabBean = gson.fromJson(response, NewsCenterTabBean.class);
-                        mNewsCenterTabBean.data.news.addAll(0, tabBean.data.news);
+                        processMoreData(response);
+
+                        //缓存数据
+                        try {
+                            CacheUtils.saveCache(mContext,url,response);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
                         //隐藏头
-                        mRvNews.hideHeaderView(true);
+                        //mRvNews.hideHeaderView(true);
+
+                        //postDelayed运行在主线程,可以不使用延时操作,因为本身获取数据的时候会耗时
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                mRvNews.hideHeaderView(true);
+                            }
+                        }, 2000);
+
                     }
                 });
     }
 
+    private void processMoreData(String response) {
+        Gson gson = new Gson();
+        NewsCenterTabBean tabBean = gson.fromJson(response, NewsCenterTabBean.class);
+        mNewsCenterTabBean.data.news.addAll(0, tabBean.data.news);
+    }
+
+    @Override
+    public void onLoadMore() {
+        final String url = Constant.HOST + mNewsCenterTabBean.data.more;
+        OkHttpUtils
+                .get()
+                .url(url)
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        MyToast.show(mContext, "联网获取数据失败");
+
+                        //读取缓存
+                        try {
+                            String json = CacheUtils.readCache(mContext, url);
+                            if(!TextUtils.isEmpty(json)){
+                                processLoadMoreData(json);
+                            }
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+
+                        //隐藏脚
+                        mRvNews.hideFooterView();
+                    }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+                        processLoadMoreData(response);
+
+                        //缓存数据
+                        try {
+                            CacheUtils.saveCache(mContext,url,response);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        //隐藏脚
+                        //mRvNews.hideFooterView();
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                mRvNews.hideFooterView();
+                            }
+                        }, 2000);
+                    }
+                });
+    }
+
+    private void processLoadMoreData(String response) {
+        Gson gson = new Gson();
+        NewsCenterTabBean tabBean = gson.fromJson(response, NewsCenterTabBean.class);
+        mNewsCenterTabBean.data.news.addAll(tabBean.data.news);
+    }
 }

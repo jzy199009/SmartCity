@@ -46,7 +46,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     public void setNewsCenterMenuBeenList(List<NewsCenterBean.NewsCenterMenuBean> newsCenterMenuBeenList) {
         mNewsCenterMenuBeenList = newsCenterMenuBeenList;
 
-        mMenuAdapter.setNewsCenterMenuBeenList(newsCenterMenuBeenList);
+        mMenuAdapter.setData(newsCenterMenuBeenList);
     }
 
     @Override
@@ -115,6 +115,9 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
 
         mTabVp.setAdapter(new MainVPFragmentAdapter(getSupportFragmentManager(),mFragments));
 
+        //让viewpager缓存左右各4个页面
+        mTabVp.setOffscreenPageLimit(4);
+
     }
 
     @Override
@@ -152,7 +155,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
 
         //加载网络数据的入口,这一步很重要,没有这一步侧滑菜单获取不到内容,神奇的转换,好好体会
         BaseFragment baseFragment = (BaseFragment) mFragments.get(item);//强制类型提升
-        if (baseFragment instanceof BaseLoadNetDataOperator) {
+        if (baseFragment instanceof BaseLoadNetDataOperator && !baseFragment.hasLoadData) {//添加标示，禁止每次都去加载数据,浪费流量
             ((BaseLoadNetDataOperator) baseFragment).loadNetData();
         }
     }

@@ -1,6 +1,7 @@
 package cn.jzy.smartcity.view;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
@@ -19,12 +20,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.jzy.smartcity.R;
 import cn.jzy.smartcity.adapter.XWrapAdapter;
+import cn.jzy.smartcity.utils.MyLogger;
 
 /**
  * Created by Administrator on 2017/4/3.
  * 上拉下拉加载数据的RecyclerView
  */
 public class RefreshRecyclerView extends RecyclerView {
+    private static final String TAG = "RefreshRecyclerView";
     @BindView(R.id.iv_arrow)
     ImageView mIvArrow;
     @BindView(R.id.pb)
@@ -54,6 +57,8 @@ public class RefreshRecyclerView extends RecyclerView {
     private final static int REFRESHING_STATE = 2;
     private Animation animtion1;
     private Animation animtion2;
+
+    private Handler mHandler = new Handler();
 
 
     public RefreshRecyclerView(Context context) {
@@ -134,8 +139,15 @@ public class RefreshRecyclerView extends RecyclerView {
         super.setAdapter(adapter);
     }
 
+    private View mSwitchImageView;//轮播图
     //添加轮播图的方法
     public void addSwitchImageView(View view) {
+        //头是1个,轮播图是一个,所以一共是两个
+        if(mHeaderView.getChildCount() == 2){
+            //移除原来的轮播图
+            mHeaderView.removeViewAt(1);
+        }
+        this.mSwitchImageView = view;
         mHeaderView.addView(view);
     }
 
@@ -157,6 +169,24 @@ public class RefreshRecyclerView extends RecyclerView {
             case MotionEvent.ACTION_MOVE://移动
                 //MyLogger.i(TAG,"移动");
                 int moveY = (int) ev.getY();
+
+                //获取RecyclerView在窗体上的位置
+                int[] rvLocation = new int[2];
+                getLocationInWindow(rvLocation);
+                //System.out.println("rvLocation = " + rvLocation[1]);
+
+                //获取轮播图在窗体上的位置
+                int[] location = new int[2];
+                mSwitchImageView.getLocationInWindow(location);
+                //System.out.println("location = " + location[1]);
+
+                //对比RecyclerView和轮播图的Y轴的值
+                //如果轮播图的y坐标 < recyclerView的y坐标（也就是轮播图，没有完全显示出来）
+                //此时，我们不处理头布局状态
+                if (rvLocation[1] > location[1]){
+                    //不处理
+                    return super.dispatchTouchEvent(ev);
+                }
 
                 //条件 RecyclerView的第一个条目的下标是0 && 往下拽的行为
                 disY = moveY - downY;
@@ -206,6 +236,7 @@ public class RefreshRecyclerView extends RecyclerView {
                         mIvArrow.clearAnimation();
                         mIvArrow.setVisibility(View.INVISIBLE);
                         mPb.setVisibility(View.VISIBLE);
+
                         //加载最新的数据
                         if (mOnRefreshListener!=null){
                             mOnRefreshListener.onRefresh();
@@ -215,6 +246,41 @@ public class RefreshRecyclerView extends RecyclerView {
                 break;
         }
         return super.dispatchTouchEvent(ev);
+    }
+
+
+    private boolean hasLoadMoreData=false;
+    @Override
+    public void onScrollStateChanged(int state) {
+        super.onScrollStateChanged(state);
+        switch (state) {
+            case RecyclerView.SCROLL_STATE_DRAGGING://滑动|拖拽
+                MyLogger.i(TAG, "DRAGGING");
+                break;
+            case RecyclerView.SCROLL_STATE_SETTLING://惯性滑动|飞行
+                MyLogger.i(TAG, "SETTLING");
+                break;
+            case RecyclerView.SCROLL_STATE_IDLE://静止
+                MyLogger.i(TAG, "IDLE");
+                break;
+        }
+
+        //在静止的状态下   && 必须是最后显示的条目就是RecyclerView的最后一个条目 && 没有在加载更多的数据
+        boolean isState = state == RecyclerView.SCROLL_STATE_IDLE || state == RecyclerView.SCROLL_STATE_SETTLING;
+        //最后一个条目显示的下标
+        int lastVisibleItemPosition = lm.findLastVisibleItemPosition();
+        boolean isLastVisibleItem = lastVisibleItemPosition == getAdapter().getItemCount() - 1;
+
+        if(isState && isLastVisibleItem && !hasLoadMoreData && mOnLoadMoreListener != null){
+            hasLoadMoreData = true;
+            //显示脚
+            mFooterView.setPadding(0,0,0,0);
+            //滑动到显示的脚的位置
+            smoothScrollToPosition(lastVisibleItemPosition);
+            //加载数据
+            mOnLoadMoreListener.onLoadMore();
+        }
+
     }
 
     //加载最新数据的接口
@@ -246,16 +312,23 @@ public class RefreshRecyclerView extends RecyclerView {
         getAdapter().notifyDataSetChanged();
     }
 
+    //隐藏脚
+    public void hideFooterView(){
+        hasLoadMoreData = false;
+        mFooterView.setPadding(0,-mFooterMeasuredHeight,0,0);
+        //刷新数据
+        getAdapter().notifyDataSetChanged();
+    }
 
-//    //加载更多的接口
-//    public interface OnLoadMoreListener{
-//        void onLoadMore();
-//    }
-//
-//    private OnLoadMoreListener mOnLoadMoreListener;
-//
-//    public void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener){
-//        this.mOnLoadMoreListener = mOnLoadMoreListener;
-//    }
+
+    //加载更多的接口
+    public interface OnLoadMoreListener{
+        void onLoadMore();
+    }
+
+    private OnLoadMoreListener mOnLoadMoreListener;
+    public void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener){
+        this.mOnLoadMoreListener = mOnLoadMoreListener;
+    }
 
 }

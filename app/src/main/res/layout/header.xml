@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+    <!--ViewGroup类型,将会把轮播图添加进来:
+    最外层必须由LinearLayout包裹,vertical方向,如果改为relativeLayout,
+    轮播图将会和header重合!!!-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
 
     <LinearLayout
+        android:gravity="center_horizontal"
         android:id="@+id/default_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,8 +30,9 @@
                 android:layout_height="wrap_content"
                 android:indeterminateDrawable="@drawable/pb_bg"/>
         </FrameLayout>
+
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_gravity="center_vertical">

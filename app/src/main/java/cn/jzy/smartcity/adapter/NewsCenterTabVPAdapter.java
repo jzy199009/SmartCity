@@ -37,7 +37,7 @@ public class NewsCenterTabVPAdapter extends PagerAdapter {
         View view = views.get(position).mView;
         container.addView(view);
         
-        //当新闻中心页的Viewpager切换页面时，在NewsCenterTabVPAdapter的instantiateItem方法中，进行加载网络数据
+        //当新闻中心页的Viewpager切换页面时，进行加载网络数据,即加载Viewpager下面的新闻列表
         NewsCenterContentTabPager tabPager = views.get(position);
         // /10007/list_1.json 需要在前面进行路径的拼接
         String url = Constant.HOST + children.get(position).url;

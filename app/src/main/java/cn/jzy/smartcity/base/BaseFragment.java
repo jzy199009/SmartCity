@@ -27,9 +27,13 @@ public abstract class BaseFragment extends Fragment {
     @BindView(R.id.tv_title)
     TextView mTvTitle;
     @BindView(R.id.ib_pic_type)
-    ImageButton mIbPicType;
+    public ImageButton mIbPicType;
     @BindView(R.id.container)
-    FrameLayout mContainer;
+    public FrameLayout mContainer;
+
+    //是否已经加载数据
+    public boolean hasLoadData;
+
 
     @Nullable
     @Override
@@ -40,6 +44,14 @@ public abstract class BaseFragment extends Fragment {
         //2.如果attachToRoot为false,就不会添加这个布局到root父布局,返回的view为resource指定的布局
         View view = inflater.inflate(R.layout.fragment_tab_base, container, false);
         ButterKnife.bind(this, view);
+
+//        mIbMenu = (ImageButton) view.findViewById(R.id.ib_menu);
+//        mTvTitle = (TextView) view.findViewById(R.id.tv_title);
+//        mIbPicType = (ImageButton) view.findViewById(R.id.ib_pic_type);
+//        mContainer = (FrameLayout) view.findViewById(R.id.container);
+//
+//        mIbMenu.setOnClickListener(this);
+
         return view;
     }
 
@@ -80,9 +92,16 @@ public abstract class BaseFragment extends Fragment {
     }
 
     @OnClick(R.id.ib_menu)
-    public void onClick() {
+    public void click(View view) {
         //对于侧滑菜单进行切换
         //目标：获取SlidingMenu -->MainActivity
         ((MainActivity)getActivity()).mSlidingMenu.toggle();
     }
+
+//    @Override
+//    public void onClick(View v) {
+//        //对于侧滑菜单进行切换
+//        //目标：获取SlidingMenu -->MainActivity
+//        ((MainActivity)getActivity()).mSlidingMenu.toggle();
+//    }
 }
