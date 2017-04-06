@@ -11,6 +11,8 @@ import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.widget.RelativeLayout;
 
+import com.umeng.analytics.MobclickAgent;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.jzy.smartcity.R;
@@ -99,5 +101,15 @@ public class SplashActivity extends Activity implements Animation.AnimationListe
             }
             finish();
         }
+    }
+
+    //友盟统计
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

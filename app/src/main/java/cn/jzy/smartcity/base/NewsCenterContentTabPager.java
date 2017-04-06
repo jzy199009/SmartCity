@@ -13,7 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.squareup.picasso.Picasso;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
@@ -30,6 +29,7 @@ import cn.jzy.smartcity.utils.CacheUtils;
 import cn.jzy.smartcity.utils.Constant;
 import cn.jzy.smartcity.utils.MyLogger;
 import cn.jzy.smartcity.utils.MyToast;
+import cn.jzy.smartcity.utils.bitmap.BitmapUtils;
 import cn.jzy.smartcity.view.RecycleViewDivider;
 import cn.jzy.smartcity.view.RefreshRecyclerView;
 import cn.jzy.smartcity.view.SwitchImageViewViewPager;
@@ -59,7 +59,7 @@ public class NewsCenterContentTabPager implements ViewPager.OnPageChangeListener
     private Handler mHandler = new Handler();
 
     //判断是否在切换
-    // private boolean hasSwitch;
+     public boolean hasSwitch;
 
 
     public NewsCenterContentTabPager(Context context) {
@@ -127,6 +127,9 @@ public class NewsCenterContentTabPager implements ViewPager.OnPageChangeListener
         //把当前的NewsCenterContentTabPager对象传递给SwitchImageViewViewPager
         mVpSwitchImage.setTabPager(this);
 
+        //把当前的NewsCenterContentTabPager对象传递给RefreshRecyclerView
+        mRvNews.setContentTabPager(this);
+
     }
 
     //绑定数据给控件
@@ -184,7 +187,10 @@ public class NewsCenterContentTabPager implements ViewPager.OnPageChangeListener
                 topNewsBean = mNewsCenterTabBean.data.topnews.get(i);
             }
             ImageView imageView = new ImageView(mContext);
-            Picasso.with(mContext).load(topNewsBean.topimage).into(imageView);
+
+            //采用我们自己的图片缓存工具
+            BitmapUtils.display(mContext,imageView,topNewsBean.topimage);
+            //Picasso.with(mContext).load(topNewsBean.topimage).into(imageView);
             mImageViews.add(imageView);
         }
 
@@ -276,12 +282,14 @@ public class NewsCenterContentTabPager implements ViewPager.OnPageChangeListener
 
     //开始切换
     public void startSwitch() {
+        hasSwitch = true;
         //往Handler里面的消息队列里面发送一个延时的消息
         mHandler.postDelayed(new SwitchTask(), 3000);
     }
 
     //停止切换
     public void stopSwitch() {
+        hasSwitch = false;
         mHandler.removeCallbacksAndMessages(null);
     }
 
@@ -330,6 +338,17 @@ public class NewsCenterContentTabPager implements ViewPager.OnPageChangeListener
 
                         //隐藏头
                         mRvNews.hideHeaderView(false);
+
+                        //由于上层RefreshRecyclerView中嵌套了轮播图SwitchImageViewViewPager，
+//                        当RefreshRecyclerView下拉刷新完成以后，
+//                        此时，下面的轮播图SwitchImageViewViewPager 并没有获得抬起的事件。
+//                        因此轮播图一致处于停止状态。
+
+                        //手动开启轮播图切换
+                        if (!hasSwitch) {
+                            startSwitch();
+                        }
+
                     }
 
                     @Override
@@ -354,6 +373,10 @@ public class NewsCenterContentTabPager implements ViewPager.OnPageChangeListener
                             }
                         }, 2000);
 
+                        //手动开启轮播图切换
+                        if (!hasSwitch) {
+                            startSwitch();
+                        }
                     }
                 });
     }

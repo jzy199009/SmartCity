@@ -73,7 +73,9 @@ public class SwitchImageViewViewPager extends ViewPager {
                     MyToast.show(getContext(),"点击事件");
                 }
                 //开始切换
-                tabPager.startSwitch();
+                if (!tabPager.hasSwitch) {
+                    tabPager.startSwitch();
+                }
                 break;
             default:
                 break;

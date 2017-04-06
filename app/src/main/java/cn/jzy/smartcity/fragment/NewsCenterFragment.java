@@ -56,7 +56,7 @@ public class NewsCenterFragment extends BaseFragment implements BaseLoadNetDataO
     @Override
     public void initTitle() {
         setIbMenuDisplayState(true);
-        setIbPicTypeDisplayState(true);
+        setIbPicTypeDisplayState(false);
         setTitle("新闻");
     }
 

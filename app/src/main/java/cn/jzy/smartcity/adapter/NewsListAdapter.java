@@ -2,14 +2,13 @@ package cn.jzy.smartcity.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -18,6 +17,9 @@ import butterknife.ButterKnife;
 import cn.jzy.smartcity.R;
 import cn.jzy.smartcity.activity.NewsDetailActivity;
 import cn.jzy.smartcity.bean.NewsCenterTabBean;
+import cn.jzy.smartcity.utils.Constant;
+import cn.jzy.smartcity.utils.SPUtils;
+import cn.jzy.smartcity.utils.bitmap.BitmapUtils;
 
 /**
  * Created by Administrator on 2017/4/2.
@@ -41,12 +43,24 @@ public class NewsListAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final NewsCenterTabBean.NewsBean newsBean = news.get(position);
-        ViewHolder viewHolder = (ViewHolder) holder;
+        final ViewHolder viewHolder = (ViewHolder) holder;
 
-        Picasso.with(mContext).load(newsBean.listimage).into(viewHolder.mIvIcon);
+        //Picasso.with(mContext).load(newsBean.listimage).into(viewHolder.mIvIcon);
+
+        //采用我们自己的图片缓存工具
+        BitmapUtils.display(mContext,viewHolder.mIvIcon,newsBean.listimage);
         viewHolder.mTvTitle.setText(newsBean.title);
         viewHolder.mTvTime.setText(newsBean.pubdate);
 
+        //判断每条新闻是否已经被查看过，如果查看，修改字体样式为灰色
+        String readNews = SPUtils.getString(mContext, Constant.KEY_HAS_READ, "");
+        if (readNews.contains(newsBean.id)) {
+            viewHolder.mTvTitle.setTextColor(Color.GRAY);
+        } else {
+            viewHolder.mTvTitle.setTextColor(Color.BLACK);
+        }
+
+        //条目点击事件
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,6 +68,19 @@ public class NewsListAdapter extends RecyclerView.Adapter {
                 Intent intent = new Intent(mContext,NewsDetailActivity.class);
                 intent.putExtra("url",newsBean.url);
                 mContext.startActivity(intent);
+
+                //存储该条新闻的唯一标识
+                String id = newsBean.id;
+                //存储在哪里？Sp   File   DB（)实际开发中要存储在数据库!
+                String readNews = SPUtils.getString(mContext, Constant.KEY_HAS_READ, "");
+                if (!readNews.contains(id)){
+                    String value = readNews + "," + id;
+                    //存储
+                    SPUtils.saveString(mContext,Constant.KEY_HAS_READ,value);
+                    //刷新界面
+                    //notifyDataSetChanged();
+                    viewHolder.mTvTitle.setTextColor(Color.GRAY);
+                }
             }
         });
     }

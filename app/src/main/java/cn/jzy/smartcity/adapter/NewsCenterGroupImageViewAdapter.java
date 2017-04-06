@@ -8,14 +8,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.jzy.smartcity.R;
 import cn.jzy.smartcity.bean.NewsCenterGroupImageViewBean;
+import cn.jzy.smartcity.utils.bitmap.BitmapUtils;
 
 /**
  * Created by Administrator on 2017/4/5.
@@ -43,8 +42,12 @@ public class NewsCenterGroupImageViewAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         NewsCenterGroupImageViewBean.NewsCenterGroupImageViewNewsBean newsBean = news.get(position);
         ViewHolder viewHolder = (ViewHolder) holder;
+
         //Picasso主要采用的是图片三级缓存技术的实现
-        Picasso.with(context).load(newsBean.listimage).into(viewHolder.mIv);
+        //Picasso.with(context).load(newsBean.listimage).into(viewHolder.mIv);
+
+        //采用我们自己的图片缓存工具
+        BitmapUtils.display(context,viewHolder.mIv,newsBean.listimage);
         viewHolder.mTvTitle.setText(newsBean.title);
     }
 

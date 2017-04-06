@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.umeng.analytics.MobclickAgent;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,7 @@ import butterknife.OnClick;
 import cn.jzy.smartcity.R;
 import cn.jzy.smartcity.adapter.GuideVPAdapter;
 import cn.jzy.smartcity.utils.Constant;
+import cn.jzy.smartcity.utils.Dp2PxUtils;
 import cn.jzy.smartcity.utils.MyLogger;
 import cn.jzy.smartcity.utils.SPUtils;
 
@@ -67,7 +70,12 @@ public class GuideActivity extends Activity implements ViewPager.OnPageChangeLis
         for (int resId : imgs) {
             View view = new View(this);
             view.setBackgroundResource(R.drawable.point_gray_bg);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(15, 15);
+
+            //原因：布局中红色点的单位：10dp   java代码中的10：是px
+            //dp转换成px
+            int width = Dp2PxUtils.dp2px(this,10);
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, width);
             params.rightMargin = 20;//设置右边距
             mContainerGrayPoint.addView(view, params);
         }
@@ -135,4 +143,15 @@ public class GuideActivity extends Activity implements ViewPager.OnPageChangeLis
 
         finish();
     }
+
+    //友盟统计
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
 }

@@ -9,6 +9,7 @@ import android.view.Window;
 import android.widget.RadioGroup;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +94,8 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         //设置侧滑菜单，默认不可以滑出
         mSlidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
         //设置侧滑菜单滑出后，主界面的宽度
-        mSlidingMenu.setBehindOffset(250);
+        //此处应用尺寸适配,来适配低分辨率手机
+        mSlidingMenu.setBehindOffset(getResources().getDimensionPixelOffset(R.dimen.offset));
 
         //设置侧滑菜单的宽度
         //slidingmenu.setBehindWidth(250);
@@ -165,5 +167,15 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         int currentItem = mTabVp.getCurrentItem();
         BaseFragment baseFragment = (BaseFragment) mFragments.get(currentItem);
         return baseFragment;
+    }
+
+    //友盟统计
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

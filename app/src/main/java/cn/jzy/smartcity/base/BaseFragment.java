@@ -66,17 +66,17 @@ public abstract class BaseFragment extends Fragment {
     public abstract void initTitle();
 
     //设置Menu的显示状态
-    public void setIbMenuDisplayState(boolean isShow){
+    public void setIbMenuDisplayState(boolean isShow) {
         mIbMenu.setVisibility(isShow ? View.VISIBLE : View.GONE);
     }
 
     //设置PicType的显示状态
-    public void setIbPicTypeDisplayState(boolean isShow){
-        mIbPicType.setVisibility(isShow?View.VISIBLE:View.GONE);
+    public void setIbPicTypeDisplayState(boolean isShow) {
+        mIbPicType.setVisibility(isShow ? View.VISIBLE : View.GONE);
     }
 
     //设置标题内容
-    public void setTitle(String title){
+    public void setTitle(String title) {
         mTvTitle.setText(title);
     }
 
@@ -95,7 +95,7 @@ public abstract class BaseFragment extends Fragment {
     public void click(View view) {
         //对于侧滑菜单进行切换
         //目标：获取SlidingMenu -->MainActivity
-        ((MainActivity)getActivity()).mSlidingMenu.toggle();
+        ((MainActivity) getActivity()).mSlidingMenu.toggle();
     }
 
 //    @Override

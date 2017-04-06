@@ -11,6 +11,8 @@ import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
+import com.umeng.analytics.MobclickAgent;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -91,14 +93,14 @@ public class NewsDetailActivity extends Activity {
             WebSettings.TextSize.SMALLEST,
     };
 
-    int selectPosition;
+    int selectPosition = 2;
     //修改网页字体大小
     private void changeWebViewTextSize() {
         //单选的对话框   AlertDialog
         //设置字体大小 webView.getSettings().setTextSize(TextS);
         new AlertDialog.Builder(this)
                 .setTitle("选择字体的大小")
-                .setSingleChoiceItems(types, 2, new DialogInterface.OnClickListener() {
+                .setSingleChoiceItems(types, selectPosition, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         selectPosition = which;
@@ -139,5 +141,15 @@ public class NewsDetailActivity extends Activity {
 
 // 启动分享GUI
         oks.show(this);
+    }
+
+    //友盟统计
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

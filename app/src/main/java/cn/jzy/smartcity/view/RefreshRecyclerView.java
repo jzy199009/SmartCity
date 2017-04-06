@@ -20,6 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.jzy.smartcity.R;
 import cn.jzy.smartcity.adapter.XWrapAdapter;
+import cn.jzy.smartcity.base.NewsCenterContentTabPager;
 import cn.jzy.smartcity.utils.MyLogger;
 
 /**
@@ -59,6 +60,14 @@ public class RefreshRecyclerView extends RecyclerView {
     private Animation animtion2;
 
     private Handler mHandler = new Handler();
+
+    //控制轮播图开始和停止的对象
+    private NewsCenterContentTabPager mContentTabPager;
+
+    //在哪里调用？ 在加载数据成功之后，就可以把该对象设置过来
+    public void setContentTabPager(NewsCenterContentTabPager contentTabPager) {
+        mContentTabPager = contentTabPager;
+    }
 
 
     public RefreshRecyclerView(Context context) {
@@ -182,9 +191,10 @@ public class RefreshRecyclerView extends RecyclerView {
 
                 //对比RecyclerView和轮播图的Y轴的值
                 //如果轮播图的y坐标 < recyclerView的y坐标（也就是轮播图，没有完全显示出来）
-                //此时，我们不处理头布局状态
+                //此时，我们不处理头布局状态,解决下拉回弹问题
                 if (rvLocation[1] > location[1]){
                     //不处理
+                    downY =  moveY;//解决刷新头突然出来的问题
                     return super.dispatchTouchEvent(ev);
                 }
 
@@ -219,6 +229,12 @@ public class RefreshRecyclerView extends RecyclerView {
             case MotionEvent.ACTION_UP://弹起
             case MotionEvent.ACTION_CANCEL://事件取消
             case MotionEvent.ACTION_OUTSIDE://外部点击
+
+                //开始轮播图切换
+                if (!mContentTabPager.hasSwitch) {
+                    mContentTabPager.startSwitch();
+                }
+
                 //MyLogger.i(TAG,"弹起");
                 int mFirstVisibleItemPosition = lm.findFirstVisibleItemPosition();
                 if(mFirstVisibleItemPosition == 0 && disY > 0){
