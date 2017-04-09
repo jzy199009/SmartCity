@@ -47,7 +47,7 @@ public class NewsListAdapter extends RecyclerView.Adapter {
 
         //Picasso.with(mContext).load(newsBean.listimage).into(viewHolder.mIvIcon);
 
-        //采用我们自己的图片缓存工具
+        //采用我们自己的图片缓存工具有很多bug,工作用Picasso
         BitmapUtils.display(mContext,viewHolder.mIvIcon,newsBean.listimage);
         viewHolder.mTvTitle.setText(newsBean.title);
         viewHolder.mTvTime.setText(newsBean.pubdate);

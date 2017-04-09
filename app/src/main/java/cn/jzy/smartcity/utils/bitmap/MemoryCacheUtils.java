@@ -48,7 +48,9 @@ public class MemoryCacheUtils {
 //        SoftReference<Bitmap> soft = new SoftReference<Bitmap>(bitmap);
 //        caches.put(url,soft);
 
-        lruCache.put(url,bitmap);
+        if (bitmap !=null) {
+            lruCache.put(url, bitmap);
+        }
     }
 
     //读缓存

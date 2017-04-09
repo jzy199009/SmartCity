@@ -1,2 +1,2 @@
-include ':app', ':library-SlidingMenu'
+include ':app', ':library-SlidingMenu', ':TopNewGrid', ':gridlayout-test', ':webview-base', ':360news', ':videoplayerlist'
 include ':library-ViewPagerIndicator'

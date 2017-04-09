@@ -32,7 +32,9 @@ public class LocalCacheUtils {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        if (bitmap !=null) {
         bitmap.compress(Bitmap.CompressFormat.JPEG,100,fos);
+        }
     }
 
     //读缓存

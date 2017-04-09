@@ -2,10 +2,15 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/360news/360news.iml" filepath="$PROJECT_DIR$/360news/360news.iml" />
       <module fileurl="file://$PROJECT_DIR$/SmartCity.iml" filepath="$PROJECT_DIR$/SmartCity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TopNewGrid/TopNewGrid.iml" filepath="$PROJECT_DIR$/TopNewGrid/TopNewGrid.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gridlayout-test/gridlayout-test.iml" filepath="$PROJECT_DIR$/gridlayout-test/gridlayout-test.iml" />
       <module fileurl="file://$PROJECT_DIR$/library-SlidingMenu/library-SlidingMenu.iml" filepath="$PROJECT_DIR$/library-SlidingMenu/library-SlidingMenu.iml" />
       <module fileurl="file://$PROJECT_DIR$/library-ViewPagerIndicator/library-ViewPagerIndicator.iml" filepath="$PROJECT_DIR$/library-ViewPagerIndicator/library-ViewPagerIndicator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/videoplayerlist/videoplayerlist.iml" filepath="$PROJECT_DIR$/videoplayerlist/videoplayerlist.iml" />
+      <module fileurl="file://$PROJECT_DIR$/webview-base/webview-base.iml" filepath="$PROJECT_DIR$/webview-base/webview-base.iml" />
     </modules>
   </component>
 </project>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+   android:orientation="vertical"
+    tools:context="cn.jzy.gridlayout_test.MainActivity">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="addItem"
+        android:text="添加" />
+
+    <!--android:columnCount="4" 列数
+    android:animateLayoutChanges="true" 开启动画
+    -->
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gridLayout"
+        android:columnCount="4"
+        android:animateLayoutChanges="true"></GridLayout>
+
+    <cn.jzy.gridlayout_test.view.DragGridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/dragGridLayout"></cn.jzy.gridlayout_test.view.DragGridLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="点击选择频道"
+        android:gravity="center"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="@android:color/darker_gray"/>
+
+    <cn.jzy.gridlayout_test.view.DragGridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/dragGridLayout2"></cn.jzy.gridlayout_test.view.DragGridLayout>
+</LinearLayout>
