@@ -39,13 +39,32 @@ public class VideoPlayListAdatper extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        MyViewHolder viewHolder = (MyViewHolder) holder;
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+        final MyViewHolder viewHolder = (MyViewHolder) holder;
+
+        //获取到条目对应的数据
+        VideoPlayerItemInfo info = videoPlayerItemInfoList.get(position);
+        //传递给条目里面的MyVideoPlayer
+        viewHolder.mVideoPlayer.setPlayData(info);
+        //把条目的下标传递给MyVideoMediaController对象
+        viewHolder.mVideoPlayer.mMediaController.setPosition(position);
+
+        //把Adapter对象传递给MyVideoMediaController对象
+        viewHolder.mVideoPlayer.mMediaController.setAdapter(this);
+
+        if(position != currentPosition){
+            //设置为初始化状态
+            viewHolder.mVideoPlayer.initViewDisplay();
+        }
     }
 
     @Override
     public int getItemCount() {
         return videoPlayerItemInfoList != null ? videoPlayerItemInfoList.size() : 0;
+    }
+
+    public void setPlayPosition(int position) {
+        currentPosition = position;
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder{
